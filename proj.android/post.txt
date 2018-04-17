@@ -1,0 +1,12 @@
+#LOCAL_CFLAGS := -DNDEBUG
+LOCAL_CFLAGS := -DNDEBUG -DCOCOS2D_DEBUG=1
+
+LOCAL_WHOLE_STATIC_LIBRARIES := cocos2dx_static cocosdenshion_static cocos_extension_static cocos_lua_static cshub_prebuilt
+
+include $(BUILD_SHARED_LIBRARY)
+
+$(call import-module,CocosDenshion/android) \
+$(call import-module,cocos2dx) \
+$(call import-module,extensions) \
+$(call import-module,scripting/lua) \
+$(call import-module,C2SHub2)
