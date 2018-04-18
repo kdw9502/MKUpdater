@@ -30,7 +30,7 @@ def ReadDir(mkpath):
         relpaths.append(os.path.relpath(path,mkpath))
     DirListStr = "LOCAL_C_INCLUDES := \\\n"
     for relpath in relpaths:
-        DirListStr = '\t$(LOCAL_PATH)/'+relpath+' \\\n'
+        DirListStr = DirListStr + '\t$(LOCAL_PATH)/'+relpath+' \\\n'
     DirListStr = DirListStr + '\t$(LOCAL_PATH)/../../libs/boost\n\n'
     return DirListStr
 
