@@ -2,7 +2,8 @@ import os
 import sys
 
 def ReadCppList(mkpath):
-    CppListFile = open('cpps.txt','w')
+
+    #.mk 가 있는 디렉토리에서 실행됨
     relpaths = []
     for path,dir,files in os.walk("mplayball"):
         for file in files :
@@ -15,68 +16,58 @@ def ReadCppList(mkpath):
                 fullpath = path + '/' + file
                 relpaths.append( os.path.relpath(fullpath,mkpath) )
 
-    CppListFile.write("LOCAL_SRC_FILES := \\\n")
+    CppListStr = "LOCAL_SRC_FILES := \\\n"
     for relpath in relpaths:
-        CppListFile.write(relpath+' \\\n'*(relpath != relpaths[-1] ))
-    CppListFile.write('\n\n')
-    CppListFile.close()
+        CppListStr = CppListStr + relpath+' \\\n'*(relpath != relpaths[-1] )
+    CppListStr = CppListStr + '\n\n'
+    return CppListStr
 
 def ReadDir(mkpath):
-    DirListFile = open('dirs.txt','w')
+
+    #.mk 가 있는 디렉토리에서 실행됨
     relpaths = []
     for path,dir,files in os.walk("../../Classes"):
         relpaths.append(os.path.relpath(path,mkpath))
-    DirListFile.write("LOCAL_C_INCLUDES := \\\n")
+    DirListStr = "LOCAL_C_INCLUDES := \\\n"
     for relpath in relpaths:
-        DirListFile.write('\t$(LOCAL_PATH)/'+relpath+' \\\n')
-    DirListFile.write('\t$(LOCAL_PATH)/../../libs/boost\n\n')
-    DirListFile.close()
+        DirListStr = '\t$(LOCAL_PATH)/'+relpath+' \\\n'
+    DirListStr = DirListStr + '\t$(LOCAL_PATH)/../../libs/boost\n\n'
+    return DirListStr
 
 
 def main():
 
-    # 나머지 작성
-    # 합치기
-    pre = open("pre.txt" ,"r")
-    post= open("post.txt","r")
-    post_t= open("post.txt","r")
-    if not os.path.exists('../KBOmanager/proj.android/jni/Android.mk') :
-        mkpath = input("Can't find Android.mk, Enter the path of including Android.mk : ")
+    pre = open("pre.txt" ,"r").read()
+    post= open("post.txt","r").read()
+    post_t= open("post.txt","r").read()
+    # 이 스크립트를 실행할 디렉토리를 변경하고 싶으면 이 경로만 변경하세요 (Android.mk가 있는 경로)
+
+
+    mkpath = '../KBOmanager/KBOmanager/proj.android/jni/'
+    if not os.path.exists(mkpath) :
+        mkpath = input("Can't find jni path, Enter the path of jni path : ")
         if( os.path.isdir(mkpath)) :
+            # .mk 가 있는 디렉토리로 이동
             os.chdir(mkpath)
         else :
             print("Can't Open Path")
 
     else :
-        os.chdir('../KBOmanager/proj.android/jni')
+        # .mk 가 있는 폴더로 이동
+        os.chdir(mkpath)
+    # FIXME:디렉토리 이동때문에 코드 파악이 힘듬
 
-    ReadCppList(os.getcwd())
-    ReadDir(os.getcwd())
-    CppListFile = open('cpps.txt','r')
-    DirListFile = open('dirs.txt','r')
+    CppListStr = ReadCppList(os.getcwd())
+    DirListStr = ReadDir(os.getcwd())
 
+    #.mk 가 있는 디렉토리에서 실행됨
     output = open("Android.mk",'w')
     output_t= open("../../proj.tstore/jni/Android.mk",'w')
-    output.write(pre.read())
-    pre.seek(0)
-    output_t.write(pre.read())
-    pre.close()
 
-    output.write(CppListFile.read())
-    CppListFile.seek(0)
-    output_t.write(CppListFile.read())
-    CppListFile.close()
-    output.write(DirListFile.read())
-    DirListFile.seek(0)
-    output_t.write(DirListFile.read())
-    DirListFile.close()
-    output.write(post.read())
-    post.seek(0)
-    output_t.write(post_t.read())
-    post.close()
-    post_t.close()
+    output.write(pre + CppListStr + DirListStr + post)
+    output_t.write(pre + CppListStr + DirListStr + post_t)
     output.close()
-
+    output_t.close()
 
 
 if __name__ == '__main__' :
