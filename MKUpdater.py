@@ -39,11 +39,11 @@ def main():
 
     pre = open("pre.txt" ,"r").read()
     post= open("post.txt","r").read()
-    post_t= open("post.txt","r").read()
+    post_t= open("post_t.txt","r").read()
+    
     # 이 스크립트를 실행할 디렉토리를 변경하고 싶으면 이 경로만 변경하세요 (Android.mk가 있는 경로)
-
-
     mkpath = '../KBOmanager/KBOmanager/proj.android/jni/'
+    
     if not os.path.exists(mkpath) :
         mkpath = input("Can't find jni path, Enter the path of jni path : ")
         if( os.path.isdir(mkpath)) :
